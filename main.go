@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import api "github.com/jirgl/quadient-events-no1/api"
 
 func main() {
-	fmt.Println("init")
+	api.GetTask()
 }
