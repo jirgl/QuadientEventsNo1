@@ -6,14 +6,12 @@ import (
 	m "github.com/jirgl/quadient-events-no1/model"
 )
 
-type parentNode struct {
-	node      *node
-	direction string
-}
+//Node struct
+type Node struct {
+	Position   m.Position
+	OriginData string
 
-type node struct {
-	position        m.Position
-	originData      string
+	parent          *Node
 	path            []string
 	cost            int
 	parentDirection string
@@ -26,29 +24,33 @@ type node struct {
 
 //Traveler interface gets the nearest nodes
 type Traveler interface {
-	getNextNodes(n *node) []*node
+	getNextNodes(n *Node) []*Node
 }
 
-func findPath(start, end *node, traveler Traveler) []string {
+//FindPath func finds the shortest path
+func FindPath(from, to *Node, traveler Traveler) []string {
 	que := &priorityQueue{}
 	heap.Init(que)
-	start.open = true
-	heap.Push(que, start)
+	from.open = true
+	heap.Push(que, from)
 
 	for {
 		if que.Len() == 0 {
 			return []string{}
 		}
 
-		current := heap.Pop(que).(*node)
+		current := heap.Pop(que).(*Node)
 		current.open = false
 		current.closed = true
 
-		if current.position == end.position {
+		if current.Position == to.Position {
 			return current.path
 		}
 
 		for _, neighbor := range traveler.getNextNodes(current) {
+			if current.parent != nil && current.parent.Position == neighbor.Position {
+				continue
+			}
 			cost := current.cost + neighbor.cost
 			if cost < neighbor.cost {
 				if neighbor.open {
@@ -58,25 +60,17 @@ func findPath(start, end *node, traveler Traveler) []string {
 				neighbor.closed = false
 			}
 			if !neighbor.open && !neighbor.closed {
-				neighbor.cost = cost
 				neighbor.open = true
-				neighbor.eval = cost + getHeuristicEvaluation(neighbor, end)
+				neighbor.cost = cost
+				neighbor.eval = cost + getHeuristicEvaluation(neighbor, to)
 				neighbor.path = append(current.path, neighbor.parentDirection)
+				neighbor.parent = current
 				heap.Push(que, neighbor)
 			}
 		}
 	}
 }
 
-func getHeuristicEvaluation(from, to *node) int {
+func getHeuristicEvaluation(from, to *Node) int {
 	return 0
-}
-
-func reversePath(path []string) []string {
-	last := len(path) - 1
-	for i := 0; i < len(path)/2; i++ {
-		path[i], path[last-i] = path[last-i], path[i]
-	}
-
-	return path
 }

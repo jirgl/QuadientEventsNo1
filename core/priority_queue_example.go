@@ -2,7 +2,7 @@ package core
 
 // A priorityQueue implements heap.Interface and holds Nodes.  The
 // priorityQueue is used to track open nodes by rank.
-type priorityQueue []*node
+type priorityQueue []*Node
 
 func (pq priorityQueue) Len() int {
 	return len(pq)
@@ -20,7 +20,7 @@ func (pq priorityQueue) Swap(i, j int) {
 
 func (pq *priorityQueue) Push(x interface{}) {
 	n := len(*pq)
-	no := x.(*node)
+	no := x.(*Node)
 	no.index = n
 	*pq = append(*pq, no)
 }
