@@ -1,25 +1,22 @@
 package core
 
 import (
-	"container/heap"
-
 	m "github.com/jirgl/quadient-events-no1/model"
 )
 
+var openSet map[m.Position]*Node
+var closedSet map[m.Position]*Node
+
 //Node struct
 type Node struct {
-	Position   m.Position
 	OriginData string
+	Position   m.Position
 
-	parent          *Node
-	path            []string
-	cost            int
 	parentDirection string
-
-	open   bool
-	closed bool
-	eval   int
-	index  int //TODO pro que
+	parent          *Node
+	regularScore    int
+	heuristicScore  int
+	totalScore      int
 }
 
 //Traveler interface gets the nearest nodes
@@ -29,48 +26,83 @@ type Traveler interface {
 
 //FindPath func finds the shortest path
 func FindPath(from, to *Node, traveler Traveler) []string {
-	que := &priorityQueue{}
-	heap.Init(que)
-	from.open = true
-	heap.Push(que, from)
+	closedSet = map[m.Position]*Node{}
+	openSet = map[m.Position]*Node{}
+	openSet[from.Position] = from
+	from.regularScore = 0
+	from.heuristicScore = getHeuristicEvaluation(from, to)
+	from.totalScore = from.heuristicScore
 
-	for {
-		if que.Len() == 0 {
-			return []string{}
+	for len(openSet) != 0 {
+		x := getBestNode()
+		if x.Position == to.Position {
+			return createPath(x)
 		}
-
-		current := heap.Pop(que).(*Node)
-		current.open = false
-		current.closed = true
-
-		if current.Position == to.Position {
-			return current.path
-		}
-
-		for _, neighbor := range traveler.getNextNodes(current) {
-			if current.parent != nil && current.parent.Position == neighbor.Position {
+		delete(openSet, x.Position)
+		closedSet[x.Position] = x
+		for _, y := range traveler.getNextNodes(x) {
+			_, exists := closedSet[y.Position]
+			if exists == true {
 				continue
 			}
-			cost := current.cost + neighbor.cost
-			if cost < neighbor.cost {
-				if neighbor.open {
-					heap.Remove(que, neighbor.index)
-				}
-				neighbor.open = false
-				neighbor.closed = false
+
+			currentGScore := x.regularScore + y.regularScore
+			currentIsBetter := false
+
+			_, exists = openSet[y.Position]
+			if exists != true {
+				openSet[y.Position] = y
+				currentIsBetter = true
+			} else if currentGScore < y.regularScore {
+				currentIsBetter = true
+			} else {
+				currentIsBetter = false
 			}
-			if !neighbor.open && !neighbor.closed {
-				neighbor.open = true
-				neighbor.cost = cost
-				neighbor.eval = cost + getHeuristicEvaluation(neighbor, to)
-				neighbor.path = append(current.path, neighbor.parentDirection)
-				neighbor.parent = current
-				heap.Push(que, neighbor)
+
+			if currentIsBetter {
+				y.parent = x
+				y.regularScore = currentGScore
+				y.heuristicScore = getHeuristicEvaluation(y, to)
+				y.totalScore = y.regularScore + y.heuristicScore
 			}
 		}
 	}
+
+	return []string{}
+}
+
+func getBestNode() *Node {
+	var best *Node
+	for _, node := range openSet {
+		if best == nil {
+			best = node
+		} else if node.totalScore < best.totalScore {
+			best = node
+		}
+	}
+	return best
 }
 
 func getHeuristicEvaluation(from, to *Node) int {
-	return 0
+	absX := from.Position.X - to.Position.X
+	if absX < 0 {
+		absX = -absX
+	}
+	absY := from.Position.Y - to.Position.Y
+	if absY < 0 {
+		absY = -absY
+	}
+	r := absX + absY
+
+	return r
+}
+
+func createPath(n *Node) []string {
+	path := []string{}
+	for n.parentDirection != "" {
+		path = append([]string{n.parentDirection}, path...)
+		n = n.parent
+	}
+
+	return path
 }

@@ -1,23 +1,20 @@
 package api
 
 import (
-	"fmt"
+	"bytes"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"strings"
 )
+
+/*
+base.go file contains basic http requests which are necessary for this task.
+*/
 
 const baseURL = "tasks-rad.quadient.com:8080"
 
-func callGet(endpoint string) ([]byte, error) {
-	resp, err := http.Get("http://" + baseURL + "/" + endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	content, err := ioutil.ReadAll(resp.Body)
+func parseBody(response *http.Response) ([]byte, error) {
+	defer response.Body.Close()
+	content, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -25,23 +22,23 @@ func callGet(endpoint string) ([]byte, error) {
 	return content, nil
 }
 
-func callPut(endpoint, data string) ([]byte, error) {
-	client := &http.Client{}
-	request, err := http.NewRequest("PUT", "http://"+baseURL+"/"+endpoint, strings.NewReader(data))
-	//request.SetBasicAuth("admin", "admin")
-	//request.ContentLength = 23
-	response, err := client.Do(request)
-	var content []byte
+func callGet(endpoint string) ([]byte, error) {
+	response, err := http.Get("http://" + baseURL + "/" + endpoint)
 	if err != nil {
-		log.Fatal(err)
-	} else {
-		defer response.Body.Close()
-		content, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(content)
+		return nil, err
 	}
 
-	return content, nil
+	return parseBody(response)
+}
+
+func callPut(endpoint string, data []byte) ([]byte, error) {
+	client := &http.Client{}
+	request, err := http.NewRequest("PUT", "http://"+baseURL+"/"+endpoint, bytes.NewReader(data))
+	request.Header.Add("Content-Type", "application/json")
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseBody(response)
 }

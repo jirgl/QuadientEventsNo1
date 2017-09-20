@@ -7,18 +7,23 @@ import (
 	m "github.com/jirgl/quadient-events-no1/model"
 )
 
+/*
+endpoints.go provides endpoints of server
+*/
+
 //GetTask func fetches task from API
 func GetTask() m.Task {
-	fmt.Println("get")
-	resp, _ := callGet("task")
-	fmt.Println(resp)
+	response, _ := callGet("task")
 	var task m.Task
-	json.Unmarshal(resp, &task)
+	json.Unmarshal(response, &task)
 
 	return task
 }
 
 //SubmitTask func submits the shortest path
 func SubmitTask(id, answer string) {
-	callPut("task/"+id, answer)
+	submitTask := m.SubmitTask{Path: answer}
+	data, _ := json.Marshal(submitTask)
+	response, _ := callPut("task/"+id, data)
+	fmt.Println(string(response))
 }

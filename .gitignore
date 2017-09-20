@@ -1,2 +1,4 @@
-/js_version
 .vscode/launch.json
+debug
+core/debug.test
+quadient-events-no1

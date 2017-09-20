@@ -26,8 +26,13 @@ type Position struct {
 //Task struct
 type Task struct {
 	ID               string   `json:"id"`
-	StartedTimestamp uint     `json:"startedTimestamp"`
+	StartedTimestamp int64    `json:"startedTimestamp"`
 	Map              Map      `json:"map"`
 	Astroants        Position `json:"astroants"`
 	Sugar            Position `json:"sugar"`
+}
+
+//SubmitTask struct
+type SubmitTask struct {
+	Path string `json:"path"`
 }

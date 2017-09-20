@@ -3,31 +3,23 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	api "github.com/jirgl/quadient-events-no1/api"
 	core "github.com/jirgl/quadient-events-no1/core"
-	m "github.com/jirgl/quadient-events-no1/model"
 )
 
 func main() {
 	task := api.GetTask()
-	fmt.Println(task)
+	start := time.Now().UnixNano()
 	traveler := core.ArrayTraveler{}
 	traveler.Init(task.Map.Areas)
-	path := core.FindPath(&core.Node{
-		OriginData: "5-RD",
-		Position: m.Position{
-			X: 0,
-			Y: 0,
-		},
-	}, &core.Node{
-		OriginData: "5-RD",
-		Position: m.Position{
-			X: 0,
-			Y: 0,
-		},
-	}, traveler)
+	fmt.Println("start finding")
+	path := core.FindPath(
+		traveler.GetNode(task.Astroants.X, task.Astroants.Y),
+		traveler.GetNode(task.Sugar.X, task.Sugar.Y),
+		traveler)
 
-	fmt.Println(path)
+	fmt.Println("done in ", (time.Now().UnixNano()-start)/1000)
 	api.SubmitTask(task.ID, strings.Join(path, ""))
 }

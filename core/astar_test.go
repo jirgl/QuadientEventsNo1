@@ -7,23 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFindEndInMinimalCase(t *testing.T) {
+func TestFindingEndInMinimalCase(t *testing.T) {
 	areas := []string{"5-RD", "1-LD", "2-UR", "5-LU"}
 	travaler := ArrayTraveler{}
 	travaler.Init(areas)
-	path := FindPath(&Node{
-		OriginData: "5-RD",
-		Position: m.Position{
-			X: 0,
-			Y: 0,
-		},
-	}, &Node{
-		OriginData: "5-LU",
-		Position: m.Position{
-			X: 1,
-			Y: 1,
-		},
-	}, travaler)
+	path := FindPath(travaler.GetNode(0, 0), travaler.GetNode(1, 1), travaler)
 
 	assert.Equal(t, []string{"R", "D"}, path)
 }
@@ -41,18 +29,7 @@ func TestFindingPathInExample(t *testing.T) {
 
 	travaler := ArrayTraveler{}
 	travaler.Init(task.Map.Areas)
-	path := FindPath(&Node{
-		OriginData: "1-RDL",
-		Position: m.Position{
-			X: task.Astroants.X,
-			Y: task.Astroants.Y,
-		},
-	}, &Node{
-		Position: m.Position{
-			X: task.Sugar.X,
-			Y: task.Sugar.Y,
-		},
-	}, travaler)
+	path := FindPath(travaler.GetNode(1, 0), travaler.GetNode(2, 1), travaler)
 
 	assert.Equal(t, []string{"D", "L", "D", "R", "R", "U"}, path)
 }

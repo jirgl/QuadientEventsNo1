@@ -6,16 +6,33 @@ import (
 	m "github.com/jirgl/quadient-events-no1/model"
 )
 
+/*
+array_traveler.go is interlayer between server data and algorithm
+*/
+
 //ArrayTraveler struct is layer for getting surrounding nodes from array
 type ArrayTraveler struct {
 	array   []string
 	dimSize int
 }
 
-//Init func initializes traveler
+//Init func initializes traveler and calculate dimension size
 func (at *ArrayTraveler) Init(array []string) {
 	at.array = array
 	at.dimSize = int(math.Sqrt(float64(len(array))))
+}
+
+//GetNode func returns node on specific position
+func (at *ArrayTraveler) GetNode(x, y int) *Node {
+	cost, _ := m.ParseNode(at.array[y*at.dimSize+x])
+	return &Node{
+		OriginData:   at.array[y*at.dimSize+x],
+		regularScore: cost,
+		Position: m.Position{
+			X: x,
+			Y: y,
+		},
+	}
 }
 
 func (at ArrayTraveler) getNextNodes(n *Node) []*Node {
@@ -39,7 +56,7 @@ func (at ArrayTraveler) getNextNodes(n *Node) []*Node {
 		cost, _ := m.ParseNode(at.array[y*at.dimSize+x])
 		nodes = append(nodes, &Node{
 			OriginData:      at.array[y*at.dimSize+x],
-			cost:            cost,
+			regularScore:    cost,
 			parentDirection: string(direction),
 			Position: m.Position{
 				X: x,
