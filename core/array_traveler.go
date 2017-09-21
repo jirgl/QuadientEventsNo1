@@ -7,7 +7,7 @@ import (
 )
 
 /*
-array_traveler.go is interlayer between server data and algorithm
+array_traveler.go is interlayer between server data and algorithm needs
 */
 
 //ArrayTraveler struct is layer for getting surrounding nodes from array

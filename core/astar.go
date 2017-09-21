@@ -14,9 +14,10 @@ type Node struct {
 
 	parentDirection string
 	parent          *Node
-	regularScore    int
-	heuristicScore  int
-	totalScore      int
+
+	regularScore   int
+	heuristicScore int
+	totalScore     int
 }
 
 //Traveler interface gets the nearest nodes
@@ -26,44 +27,47 @@ type Traveler interface {
 
 //FindPath func finds the shortest path
 func FindPath(from, to *Node, traveler Traveler) []string {
+	heap := InitFibHeap()
 	closedSet = map[m.Position]*Node{}
 	openSet = map[m.Position]*Node{}
 	openSet[from.Position] = from
+	heap.Insert(0, from)
 	from.regularScore = 0
 	from.heuristicScore = getHeuristicEvaluation(from, to)
 	from.totalScore = from.heuristicScore
 
 	for len(openSet) != 0 {
-		x := getBestNode()
-		if x.Position == to.Position {
-			return createPath(x)
+		current := getBestNode(heap)
+		if current.Position == to.Position {
+			return createPath(current)
 		}
-		delete(openSet, x.Position)
-		closedSet[x.Position] = x
-		for _, y := range traveler.getNextNodes(x) {
-			_, exists := closedSet[y.Position]
+		delete(openSet, current.Position)
+		closedSet[current.Position] = current
+		for _, neighbor := range traveler.getNextNodes(current) {
+			_, exists := closedSet[neighbor.Position]
 			if exists == true {
 				continue
 			}
 
-			currentGScore := x.regularScore + y.regularScore
+			currentRegularScore := current.regularScore + neighbor.regularScore
 			currentIsBetter := false
 
-			_, exists = openSet[y.Position]
+			_, exists = openSet[neighbor.Position]
 			if exists != true {
-				openSet[y.Position] = y
+				heap.Insert(float64(currentRegularScore), neighbor)
+				openSet[neighbor.Position] = neighbor
 				currentIsBetter = true
-			} else if currentGScore < y.regularScore {
+			} else if currentRegularScore < neighbor.regularScore {
 				currentIsBetter = true
 			} else {
 				currentIsBetter = false
 			}
 
 			if currentIsBetter {
-				y.parent = x
-				y.regularScore = currentGScore
-				y.heuristicScore = getHeuristicEvaluation(y, to)
-				y.totalScore = y.regularScore + y.heuristicScore
+				neighbor.parent = current
+				neighbor.regularScore = currentRegularScore
+				neighbor.heuristicScore = getHeuristicEvaluation(neighbor, to)
+				neighbor.totalScore = neighbor.regularScore + neighbor.heuristicScore
 			}
 		}
 	}
@@ -71,18 +75,12 @@ func FindPath(from, to *Node, traveler Traveler) []string {
 	return []string{}
 }
 
-func getBestNode() *Node {
-	var best *Node
-	for _, node := range openSet {
-		if best == nil {
-			best = node
-		} else if node.totalScore < best.totalScore {
-			best = node
-		}
-	}
-	return best
+func getBestNode(fh *FibHeap) *Node {
+	_, min := fh.ExtractMin()
+	return min.(*Node)
 }
 
+//Manhattan distance
 func getHeuristicEvaluation(from, to *Node) int {
 	absX := from.Position.X - to.Position.X
 	if absX < 0 {

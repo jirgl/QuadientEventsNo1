@@ -20,6 +20,6 @@ func main() {
 		traveler.GetNode(task.Sugar.X, task.Sugar.Y),
 		traveler)
 
-	fmt.Println("done in ", (time.Now().UnixNano()-start)/1000)
+	fmt.Println("done in", (time.Now().UnixNano()-start)/1000000, "ms")
 	api.SubmitTask(task.ID, strings.Join(path, ""))
 }
