@@ -32,6 +32,13 @@ Computer specification:
 * **MEM** - 8 GB 2133 MHz LPDDR3
 
 The average time was calculated just from 10 attempts due to the remote server.
-So, the average time of algorithm in 10 attempts was: **247 ms**
-The best attempt was: **115 ms**
-The worst attempt was: **481 ms**
+So, the average time of algorithm in 10 attempts was: **247 ms**.
+The best attempt was: **115 ms**.
+The worst attempt was: **481 ms**.
+
+## example of result image
+* **gray** - cell did not processed
+* **green** - cell was processed
+* **red** - cell is part of found path
+
+[example](./example.png)
