@@ -9,9 +9,9 @@ import (
 
 func TestFindingEndInMinimalCase(t *testing.T) {
 	areas := []string{"5-RD", "1-LD", "2-UR", "5-LU"}
-	travaler := ArrayTraveler{}
-	travaler.Init(areas)
-	path := FindPath(travaler.GetNode(0, 0), travaler.GetNode(1, 1), travaler)
+	traveler := ArrayTraveler{}
+	traveler.Init(areas)
+	path := FindPath(traveler.GetNode(0, 0), traveler.GetNode(1, 1), traveler)
 
 	assert.Equal(t, []string{"R", "D"}, path)
 }
@@ -27,9 +27,9 @@ func TestFindingPathInExample(t *testing.T) {
 		Sugar:     m.Position{X: 2, Y: 1},
 	}
 
-	travaler := ArrayTraveler{}
-	travaler.Init(task.Map.Areas)
-	path := FindPath(travaler.GetNode(1, 0), travaler.GetNode(2, 1), travaler)
+	traveler := ArrayTraveler{}
+	traveler.Init(task.Map.Areas)
+	path := FindPath(traveler.GetNode(1, 0), traveler.GetNode(2, 1), traveler)
 
 	assert.Equal(t, []string{"D", "L", "D", "R", "R", "U"}, path)
 }

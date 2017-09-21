@@ -2,8 +2,11 @@ package core
 
 import (
 	"container/list"
-	"math"
 )
+
+/*
+fibonacci_heap.go contains implementation of Fibonacci heap
+*/
 
 // Value interface
 type Value interface {
@@ -56,24 +59,9 @@ func (heap *FibHeap) Insert(key float64, value interface{}) {
 
 //ExtractMin returns and extracts current minimum value and key.
 func (heap *FibHeap) ExtractMin() (float64, interface{}) {
-	if heap.num == 0 {
-		return math.Inf(-1), nil
-	}
-
 	min := heap.extractMin()
 
 	return min.key, min.tag
-}
-
-//ExtractMinValue returns and extracts current minimum value
-func (heap *FibHeap) ExtractMinValue() Value {
-	if heap.num == 0 {
-		return nil
-	}
-
-	min := heap.extractMin()
-
-	return min.value
 }
 
 func (heap *FibHeap) consolidate() {
@@ -168,44 +156,6 @@ func (heap *FibHeap) resetMin() {
 	for tree := heap.min.self.Next(); tree != nil; tree = tree.Next() {
 		if tree.Value.(*heapNode).key < heap.min.key {
 			heap.min = tree.Value.(*heapNode)
-		}
-	}
-}
-
-func (heap *FibHeap) decreaseKey(node *heapNode, value Value, key float64) error {
-	node.key = key
-	node.value = value
-	if node.parent != nil {
-		parent := node.parent
-		if node.key < node.parent.key {
-			heap.cut(node)
-			heap.cascadingCut(parent)
-		}
-	}
-
-	if node.parent == nil && node.key < heap.min.key {
-		heap.min = node
-	}
-
-	return nil
-}
-
-func (heap *FibHeap) cut(node *heapNode) {
-	node.parent.children.Remove(node.self)
-	node.parent.degree--
-	node.parent = nil
-	node.marked = false
-	node.self = heap.roots.PushBack(node)
-}
-
-func (heap *FibHeap) cascadingCut(node *heapNode) {
-	if node.parent != nil {
-		if !node.marked {
-			node.marked = true
-		} else {
-			parent := node.parent
-			heap.cut(node)
-			heap.cascadingCut(parent)
 		}
 	}
 }

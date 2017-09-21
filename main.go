@@ -7,6 +7,7 @@ import (
 
 	api "github.com/jirgl/quadient-events-no1/api"
 	core "github.com/jirgl/quadient-events-no1/core"
+	visual "github.com/jirgl/quadient-events-no1/visualization"
 )
 
 func main() {
@@ -22,4 +23,5 @@ func main() {
 
 	fmt.Println("done in", (time.Now().UnixNano()-start)/1000000, "ms")
 	api.SubmitTask(task.ID, strings.Join(path, ""))
+	visual.Visualize(task.ID, &traveler)
 }

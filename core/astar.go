@@ -4,8 +4,13 @@ import (
 	m "github.com/jirgl/quadient-events-no1/model"
 )
 
+/*
+astar.go contains implementation of A* alghorithm which uses Manhattan heuristic method
+*/
+
 var openSet map[m.Position]*Node
 var closedSet map[m.Position]*Node
+var finalPath = map[m.Position]bool{}
 
 //Node struct
 type Node struct {
@@ -39,21 +44,19 @@ func FindPath(from, to *Node, traveler Traveler) []string {
 	for len(openSet) != 0 {
 		current := getBestNode(heap)
 		if current.Position == to.Position {
-			return createPath(current)
+			return constructPath(current)
 		}
 		delete(openSet, current.Position)
 		closedSet[current.Position] = current
 		for _, neighbor := range traveler.getNextNodes(current) {
-			_, exists := closedSet[neighbor.Position]
-			if exists == true {
+			if _, exists := closedSet[neighbor.Position]; exists == true {
 				continue
 			}
 
 			currentRegularScore := current.regularScore + neighbor.regularScore
 			currentIsBetter := false
 
-			_, exists = openSet[neighbor.Position]
-			if exists != true {
+			if _, exists := openSet[neighbor.Position]; exists == false {
 				heap.Insert(float64(currentRegularScore), neighbor)
 				openSet[neighbor.Position] = neighbor
 				currentIsBetter = true
@@ -95,12 +98,35 @@ func getHeuristicEvaluation(from, to *Node) int {
 	return r
 }
 
-func createPath(n *Node) []string {
+func constructPath(n *Node) []string {
 	path := []string{}
 	for n.parentDirection != "" {
+		finalPath[n.Position] = true
 		path = append([]string{n.parentDirection}, path...)
 		n = n.parent
 	}
 
 	return path
+}
+
+//WasVisited returns info whether node was processed at specific position
+func WasVisited(position m.Position) bool {
+	if _, exists := openSet[position]; exists == true {
+		return true
+	}
+
+	if _, exists := closedSet[position]; exists == true {
+		return true
+	}
+
+	return false
+}
+
+//IsPath returns info whether node is in the shortest path
+func IsPath(position m.Position) bool {
+	if _, exists := finalPath[position]; exists == true {
+		return true
+	}
+
+	return false
 }

@@ -13,20 +13,20 @@ array_traveler.go is interlayer between server data and algorithm needs
 //ArrayTraveler struct is layer for getting surrounding nodes from array
 type ArrayTraveler struct {
 	array   []string
-	dimSize int
+	DimSize int
 }
 
 //Init func initializes traveler and calculate dimension size
 func (at *ArrayTraveler) Init(array []string) {
 	at.array = array
-	at.dimSize = int(math.Sqrt(float64(len(array))))
+	at.DimSize = int(math.Sqrt(float64(len(array))))
 }
 
 //GetNode func returns node on specific position
 func (at *ArrayTraveler) GetNode(x, y int) *Node {
-	cost, _ := m.ParseNode(at.array[y*at.dimSize+x])
+	cost, _ := m.ParseNode(at.array[y*at.DimSize+x])
 	return &Node{
-		OriginData:   at.array[y*at.dimSize+x],
+		OriginData:   at.array[y*at.DimSize+x],
 		regularScore: cost,
 		Position: m.Position{
 			X: x,
@@ -53,9 +53,9 @@ func (at ArrayTraveler) getNextNodes(n *Node) []*Node {
 			x = n.Position.X
 			y = n.Position.Y + 1
 		}
-		cost, _ := m.ParseNode(at.array[y*at.dimSize+x])
+		cost, _ := m.ParseNode(at.array[y*at.DimSize+x])
 		nodes = append(nodes, &Node{
-			OriginData:      at.array[y*at.dimSize+x],
+			OriginData:      at.array[y*at.DimSize+x],
 			regularScore:    cost,
 			parentDirection: string(direction),
 			Position: m.Position{

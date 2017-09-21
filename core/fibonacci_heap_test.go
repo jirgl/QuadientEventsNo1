@@ -16,3 +16,11 @@ func TestInsertIntoFibonacciHeap(t *testing.T) {
 	assert.Equal(t, float64(2), key)
 	assert.Equal(t, "two", value)
 }
+
+func TestGetLenOfHeap(t *testing.T) {
+	heap := InitFibHeap()
+	heap.Insert(2, "two")
+	heap.Insert(1, "one")
+
+	assert.Equal(t, uint(2), heap.Len())
+}
