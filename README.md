@@ -1,6 +1,6 @@
 # QuadientEvents competition No.1
 
-This repo was created for a competittion in #QuadientEvents. The project was built by [Go programming language](https://golang.org/) because Go makes very easy building reliable, and efficient programs.
+This repo was created for a competittion in [#QuadientEvents](http://quadientevents.cz/). The project was built by [Go programming language](https://golang.org/) because Go makes very easy building reliable, and efficient programs.
 
 ## program usage
 The program fetches a task from the remote server, runs finding algorithm and try to answer by default. There is some flags which can be used during launching program and do some more things.
@@ -21,8 +21,6 @@ For the best performance was created a priority queue. This priority queue is im
 Another performance optimalization may be in usages [goroutines](https://tour.golang.org/concurrency/1) but I had not enough time to implement it.
 
 All code is well tested. The test coverage is 91.7%. Rest of the application is not neccesary to test because I would test behaviour of Go inner lib.
-
-I would like to stress point 3 *(Structuring and clean code)* from criterions. In spite of possibility code can be little confusing, this code is written according to Go specifications and recommendations :).
 
 ## benchmark
 Computer specification:
